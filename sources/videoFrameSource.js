@@ -35,7 +35,7 @@ export default async ({ width: canvasWidth, height: canvasHeight, channels, fram
       targetHeight = Math.round(requestedWidth / inputAspectRatio);
     }
 
-    scaleFilter = `scale=${targetWidth}:${targetHeight}`;
+    scaleFilter = `scale_npp=${targetWidth}:${targetHeight}`;
   } else if (resizeMode === 'cover') {
     let scaledWidth;
     let scaledHeight;
@@ -49,9 +49,9 @@ export default async ({ width: canvasWidth, height: canvasHeight, channels, fram
     }
 
     // TODO improve performance by crop first, then scale?
-    scaleFilter = `scale=${scaledWidth}:${scaledHeight},crop=${targetWidth}:${targetHeight}`;
+    scaleFilter = `scale_npp=${scaledWidth}:${scaledHeight},crop=${targetWidth}:${targetHeight}`;
   } else { // 'stretch'
-    scaleFilter = `scale=${targetWidth}:${targetHeight}`;
+    scaleFilter = `scale_npp=${targetWidth}:${targetHeight}`;
   }
 
   if (verbose) console.log(scaleFilter);
@@ -87,13 +87,15 @@ export default async ({ width: canvasWidth, height: canvasHeight, channels, fram
   // TODO: maybe change to -vf loop=loop=XXXXX
   const args = [
     ...getFfmpegCommonArgs({ enableFfmpegLog }),
-    ...(inputCodec ? ['-vcodec', inputCodec] : []),
+    '-hwaccel', 'cuda', '-hwaccel_output_format', 'cuda',
+    // ...(inputCodec ? ['-vcodec', inputCodec] : []),
     ...(cutFrom ? ['-ss', cutFrom] : []),
     ...(loop ? ['-stream_loop','-1'] : []),
     '-i', path,
     ...(loop ? ['-t',duration] : cutTo ? ['-t', (cutTo - cutFrom) * speedFactor] : []),
     '-vf', `${ptsFilter}fps=${framerateStr},${scaleFilter}`,
     '-map', 'v:0',
+    '-c:a', 'copy', '-c:v', 'h264_nvenc', '-b:v', '5M',
     '-vcodec', 'rawvideo',
     '-pix_fmt', 'rgba',
     '-f', 'image2pipe',
