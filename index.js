@@ -206,10 +206,14 @@ async function Editly(config = {}) {
     const args = [
       ...(enableFfmpegLog ? [] : ['-hide_banner', '-loglevel', 'error']),
 
+      '-vsync','0',
+      '-hwaccel', 'cuda', '-hwaccel_output_format','cuda',
+
       '-f', 'rawvideo',
       '-vcodec', 'rawvideo',
       '-pix_fmt', 'rgba',
-      '-s', `${width}x${height}`,
+      '-vf',`scale_npp=${width}:${height}`,
+      // '-s', `${width}x${height}`,
       '-r', framerateStr,
       '-i', '-',
 
