@@ -213,7 +213,7 @@ async function Editly(config = {}) {
       '-vcodec', 'rawvideo',
       '-pix_fmt', 'rgba',
       
-      '-s', `${width}x${height}`,
+      // '-s', `scale_npp=${width}x${height}`,
       '-r', framerateStr,
       '-i', '-',
       

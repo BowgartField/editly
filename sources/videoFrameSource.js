@@ -93,7 +93,7 @@ export default async ({ width: canvasWidth, height: canvasHeight, channels, fram
     ...(loop ? ['-stream_loop','-1'] : []),
     '-i', path,
     ...(loop ? ['-t',duration] : cutTo ? ['-t', (cutTo - cutFrom) * speedFactor] : []),
-    '-vf', `${ptsFilter}fps=${framerateStr},${scaleFilter}`,
+    // '-vf', `${ptsFilter}fps=${framerateStr},${scaleFilter}`,
     '-map', 'v:0',
     '-c:a', 'copy', '-c:v', 'h264_nvenc', '-b:v', '5M',
     '-vcodec', 'rawvideo',
