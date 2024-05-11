@@ -213,11 +213,11 @@ async function Editly(config = {}) {
       '-vcodec', 'rawvideo',
       '-pix_fmt', 'rgba',
       
-      // '-s', `${width}x${height}`,
+      '-s', `${width}x${height}`,
       '-r', framerateStr,
       '-i', '-',
       
-      '-vf',`scale_npp=${width}:${height}`,
+      // '-vf',`scale_npp=${width}:${height}`,
 
       ...(audioFilePath ? ['-i', audioFilePath] : []),
 
